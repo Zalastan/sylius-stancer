@@ -22,7 +22,7 @@ final class CaptureHttpResponseProvider implements HttpResponseProviderInterface
         // this provider is no longer invoked.
         return $paymentRequest->getAction() === PaymentRequestInterface::ACTION_CAPTURE
             && $paymentRequest->getState() === PaymentRequestInterface::STATE_PROCESSING
-            && isset($paymentRequest->getResponseData()['stancer_payment_id']);}
+            && isset($paymentRequest->getResponseData()['stancer_payment_id']);
     }
 
     public function getResponse(
