@@ -7,6 +7,7 @@ namespace SpiderWeb\Sylius\StancerPlugin\Provider;
 use Sylius\Bundle\CoreBundle\OrderPay\Provider\FinalUrlProviderInterface;
 use Sylius\Bundle\PaymentBundle\Provider\HttpResponseProviderInterface;
 use Sylius\Bundle\ResourceBundle\Controller\RequestConfiguration;
+use Sylius\Component\Core\Model\PaymentInterface as CorePaymentInterface;
 use Sylius\Component\Payment\Model\PaymentRequestInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +29,9 @@ final class StatusHttpResponseProvider implements HttpResponseProviderInterface
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
     ): Response {
-        return new RedirectResponse($this->finalUrlProvider->getUrl(null));
+        $payment = $paymentRequest->getPayment();
+        $corePayment = $payment instanceof CorePaymentInterface ? $payment : null;
+
+        return new RedirectResponse($this->finalUrlProvider->getUrl($corePayment));
     }
 }
