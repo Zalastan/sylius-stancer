@@ -42,6 +42,8 @@ services:
             - { name: stancer.payment_request.provider.http_response, action: capture }
 
     SpiderWeb\Sylius\StancerPlugin\Provider\StatusHttpResponseProvider:
+        arguments:
+            $finalUrlProvider: '@sylius_shop.provider.order_pay.final_url'
         tags:
             - { name: stancer.payment_request.provider.http_response, action: status }
 
