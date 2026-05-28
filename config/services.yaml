@@ -8,6 +8,10 @@ services:
             - { name: sylius.gateway_configuration_type, type: stancer, label: 'sylius_stancer.ui.gateway_label' }
             - { name: form.type }
 
+    SpiderWeb\Sylius\StancerPlugin\Form\Extension\StancerGatewayConfigTypeExtension:
+        tags:
+            - { name: form.type_extension }
+
     # --- CommandProviders ---
 
     SpiderWeb\Sylius\StancerPlugin\CommandProvider\CapturePaymentRequestCommandProvider:
