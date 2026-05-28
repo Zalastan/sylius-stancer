@@ -6,15 +6,20 @@
     "authors": [
         {
             "name": "Spider Web",
-            "homepage": "https://github.com/spiderweb-dev"
+            "homepage": "https://www.spider-web.fr"
         }
     ],
     "require": {
-        "php": ">=8.1",
-        "payum/core": "^1.7",
+        "php": ">=8.2",
         "stancer/stancer": "^2.0",
         "sylius/core-bundle": "^2.0",
-        "symfony/form": "^6.4 || ^7.0"
+        "sylius/payment-bundle": "^2.0",
+        "symfony/form": "^6.4 || ^7.0",
+        "symfony/messenger": "^6.4 || ^7.0"
+    },
+    "conflict": {
+        "payum/core": "*",
+        "sylius/payum-bundle": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0"
@@ -29,6 +34,6 @@
             "SpiderWeb\\Sylius\\StancerPlugin\\Tests\\": "tests/"
         }
     },
-    "keywords": ["payum", "stancer", "payment", "sylius", "sylius-plugin"],
-    "homepage": "https://github.com/Zalastan/sylius-stancer-plugin"
+    "keywords": ["stancer", "payment", "sylius", "sylius-plugin"],
+    "homepage": "https://www.spider-web.fr"
 }
