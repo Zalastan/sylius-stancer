@@ -48,7 +48,9 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         $payment = new StancerPayment();
         $payment->setAmount((int) $model['amount']); // montant en centimes
         $payment->setCurrency(strtolower((string) ($model['currency_code'] ?? 'eur')));
-        $payment->setReturnUrl($request->getToken()->getAfterUrl());
+        // Stancer requires HTTPS; in dev the URL may be HTTP, so we force the scheme
+        $afterUrl = str_replace('http://', 'https://', $request->getToken()->getAfterUrl());
+        $payment->setReturnUrl($afterUrl);
 
         if (!empty($model['order_id'])) {
             $payment->setOrderId(substr((string) $model['order_id'], 0, 36));
