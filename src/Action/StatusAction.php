@@ -12,6 +12,7 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
 use Stancer\Config as StancerConfig;
 use Stancer\Payment as StancerPayment;
+use Stancer\Payment\Status as StancerStatus;
 
 final class StatusAction implements ActionInterface, ApiAwareInterface
 {
@@ -44,15 +45,20 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
 
         $payment = new StancerPayment((string) $model['stancer_payment_id']);
         $status = $payment->getStatus();
-        $model['stancer_status'] = $status;
+        $model['stancer_status'] = $status?->value;
 
         match ($status) {
-            'captured', 'to_capture', 'capture_sent' => $request->markCaptured(),
-            'authorized'                              => $request->markAuthorized(),
-            'canceled'                                => $request->markCanceled(),
-            'failed', 'refused'                       => $request->markFailed(),
-            'expired'                                 => $request->markExpired(),
-            default                                   => $request->markUnknown(),
+            StancerStatus::CAPTURED,
+            StancerStatus::TO_CAPTURE,
+            StancerStatus::CAPTURE_SENT,
+            StancerStatus::CAPTURE    => $request->markCaptured(),
+            StancerStatus::AUTHORIZED,
+            StancerStatus::AUTHORIZE  => $request->markAuthorized(),
+            StancerStatus::CANCELED   => $request->markCanceled(),
+            StancerStatus::FAILED,
+            StancerStatus::REFUSED    => $request->markFailed(),
+            StancerStatus::EXPIRED    => $request->markExpired(),
+            default                   => $request->markUnknown(),
         };
     }
 
