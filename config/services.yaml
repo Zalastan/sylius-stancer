@@ -1,4 +1,8 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: false
+
     SpiderWeb\Sylius\StancerPlugin\Form\Type\StancerGatewayConfigurationType:
         tags:
             - { name: sylius.gateway_configuration_type, type: stancer, label: 'sylius_stancer.ui.gateway_label' }
