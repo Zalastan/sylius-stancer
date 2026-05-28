@@ -21,9 +21,12 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
     use ApiAwareTrait;
     use GatewayAwareTrait;
 
-    public function __construct()
+    public function setApi($api): void
     {
-        $this->apiClass = 'array';
+        if (!is_array($api)) {
+            throw new \Payum\Core\Exception\UnsupportedApiException('Not supported api given. It must be an array.');
+        }
+        $this->api = $api;
     }
 
     /**
