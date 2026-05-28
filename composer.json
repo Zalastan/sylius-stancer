@@ -17,9 +17,6 @@
         "symfony/form": "^6.4 || ^7.0",
         "symfony/messenger": "^6.4 || ^7.0"
     },
-    "conflict": {
-        "payum/core": "*"
-    },
     "require-dev": {
         "phpunit/phpunit": "^11.0"
     },
