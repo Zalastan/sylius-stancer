@@ -43,7 +43,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
             return;
         }
 
-        StancerConfig::init($this->api['secret_key']);
+        StancerConfig::init(array_values(array_filter([$this->api['secret_key'], $this->api['public_key'] ?? null])));
 
         $payment = new StancerPayment();
         $payment->setAmount((int) $model['amount']); // montant en centimes

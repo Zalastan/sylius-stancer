@@ -40,7 +40,7 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
             return;
         }
 
-        StancerConfig::init($this->api['secret_key']);
+        StancerConfig::init(array_values(array_filter([$this->api['secret_key'], $this->api['public_key'] ?? null])));
 
         $payment = new StancerPayment((string) $model['stancer_payment_id']);
         $status = $payment->getStatus();
