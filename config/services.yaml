@@ -27,7 +27,7 @@ services:
         arguments:
             - !tagged_locator { tag: stancer.payment_request.command_provider, index_by: action }
         tags:
-            - { name: sylius.payment_request.command_provider, gateway-factory: stancer }
+            - { name: sylius.payment_request.command_provider, gateway_factory: stancer }
 
     # --- CommandHandlers ---
 
@@ -56,7 +56,7 @@ services:
         arguments:
             - !tagged_locator { tag: stancer.payment_request.provider.http_response, index_by: action }
         tags:
-            - { name: sylius.payment_request.provider.http_response, gateway-factory: stancer }
+            - { name: sylius.payment_request.provider.http_response, gateway_factory: stancer }
 
     # --- Refund ---
 
