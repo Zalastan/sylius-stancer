@@ -12,7 +12,6 @@ use Sylius\Component\Payment\PaymentRequestTransitions;
 use Sylius\Component\Payment\Repository\PaymentRequestRepositoryInterface;
 use Stancer\Config as StancerConfig;
 use Stancer\Payment as StancerPayment;
-use Stancer\Refund as StancerRefund;
 
 final class StancerPaymentRefundProcessor
 {
@@ -75,14 +74,15 @@ final class StancerPaymentRefundProcessor
 
         try {
             $stancerPayment = new StancerPayment((string) $stancerPaymentId);
-            $refund = new StancerRefund();
-            $refund->setPayment($stancerPayment);
-            $refund->setAmount((int) $payment->getAmount());
-            $refund->send();
+            $stancerPayment->refund((int) $payment->getAmount());
+
+            $refunds = $stancerPayment->getRefunds();
+            $lastRefund = end($refunds);
+            $stancerRefundId = $lastRefund ? $lastRefund->getId() : null;
 
             $refundRequest->setResponseData([
                 'stancer_payment_id' => $stancerPaymentId,
-                'stancer_refund_id' => $refund->getId(),
+                'stancer_refund_id' => $stancerRefundId,
                 'refunded_amount' => $payment->getAmount(),
             ]);
 
