@@ -60,7 +60,9 @@ services:
 
     # --- Refund ---
 
-    SpiderWeb\Sylius\StancerPlugin\Processor\StancerPaymentRefundProcessor: ~
+    SpiderWeb\Sylius\StancerPlugin\Processor\StancerPaymentRefundProcessor:
+        arguments:
+            $paymentRequestFactory: '@sylius.factory.payment_request'
 
     SpiderWeb\Sylius\StancerPlugin\EventListener\Workflow\RefundPaymentListener:
         tags:
