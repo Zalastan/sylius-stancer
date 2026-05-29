@@ -29,6 +29,19 @@ final class StatusPaymentRequestHandler
     {
         $paymentRequest = $this->paymentRequestProvider->provide($command);
 
+        // If the payment is already in a final state (handled by CapturePaymentRequestHandler
+        // on return from Stancer), skip the status check to avoid a spurious FAIL transition.
+        /** @var PaymentInterface $payment */
+        $payment = $paymentRequest->getPayment();
+        $finalStates = [PaymentInterface::STATE_COMPLETED, PaymentInterface::STATE_AUTHORIZED, PaymentInterface::STATE_CANCELLED, PaymentInterface::STATE_FAILED];
+        if (in_array($payment->getState(), $finalStates, true)) {
+            $transition = in_array($payment->getState(), [PaymentInterface::STATE_COMPLETED, PaymentInterface::STATE_AUTHORIZED], true)
+                ? PaymentRequestTransitions::TRANSITION_COMPLETE
+                : PaymentRequestTransitions::TRANSITION_FAIL;
+            $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, $transition);
+            return;
+        }
+
         $responseData = $paymentRequest->getResponseData();
         $stancerPaymentId = $responseData['stancer_payment_id'] ?? null;
 
