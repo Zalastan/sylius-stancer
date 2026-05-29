@@ -106,6 +106,12 @@ final class CapturePaymentRequestHandler
         $responseData['stancer_status'] = $status?->value;
         $paymentRequest->setResponseData($responseData);
 
+        // Payment was never attempted (null status = user returned before completing payment on Stancer)
+        if (null === $status) {
+            $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, PaymentRequestTransitions::TRANSITION_FAIL);
+            return;
+        }
+
         /** @var PaymentInterface $payment */
         $payment = $paymentRequest->getPayment();
 
@@ -116,10 +122,11 @@ final class CapturePaymentRequestHandler
             StancerStatus::CAPTURE => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_COMPLETE),
             StancerStatus::AUTHORIZED,
             StancerStatus::AUTHORIZE => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_AUTHORIZE),
-            StancerStatus::CANCELED => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_CANCEL),
+            StancerStatus::CANCELED,
+            StancerStatus::EXPIRED => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_CANCEL),
             StancerStatus::FAILED,
-            StancerStatus::REFUSED => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_FAIL),
-            default => null,
+            StancerStatus::REFUSED,
+            StancerStatus::DISPUTED => $this->applyPaymentTransition($payment, PaymentTransitions::TRANSITION_FAIL),
         };
 
         $paymentRequestTransition = match ($status) {
@@ -130,14 +137,13 @@ final class CapturePaymentRequestHandler
             StancerStatus::AUTHORIZED,
             StancerStatus::AUTHORIZE => PaymentRequestTransitions::TRANSITION_COMPLETE,
             StancerStatus::CANCELED,
+            StancerStatus::EXPIRED,
             StancerStatus::FAILED,
-            StancerStatus::REFUSED => PaymentRequestTransitions::TRANSITION_FAIL,
-            default => null,
+            StancerStatus::REFUSED,
+            StancerStatus::DISPUTED => PaymentRequestTransitions::TRANSITION_FAIL,
         };
 
-        if (null !== $paymentRequestTransition) {
-            $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, $paymentRequestTransition);
-        }
+        $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, $paymentRequestTransition);
     }
 
     private function applyPaymentTransition(PaymentInterface $payment, string $transition): void
