@@ -7,11 +7,15 @@ namespace SpiderWeb\Sylius\StancerPlugin\Provider;
 use Sylius\Bundle\PaymentBundle\Provider\HttpResponseProviderInterface;
 use Sylius\Bundle\ResourceBundle\Controller\RequestConfiguration;
 use Sylius\Component\Payment\Model\PaymentRequestInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 
 final class CaptureHttpResponseProvider implements HttpResponseProviderInterface
 {
+    public function __construct(private Environment $twig)
+    {
+    }
+
     public function supports(
         RequestConfiguration $requestConfiguration,
         PaymentRequestInterface $paymentRequest,
@@ -39,6 +43,13 @@ final class CaptureHttpResponseProvider implements HttpResponseProviderInterface
             $stancerPaymentId,
         );
 
-        return new RedirectResponse($hostedUrl);
+        $returnUrl = $requestConfiguration->getRequest()->getUri();
+
+        return new Response(
+            $this->twig->render('@SpiderWebSyliusStancerPlugin/redirect.html.twig', [
+                'stancer_url' => $hostedUrl,
+                'return_url' => $returnUrl,
+            ]),
+        );
     }
 }

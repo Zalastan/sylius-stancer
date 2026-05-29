@@ -3,3 +3,6 @@ sylius_stancer:
         gateway_label: 'Stancer'
         secret_key: 'Secret key (stest_... or slive_...)'
         public_key: 'Public key (ptest_... or plive_...)'
+        redirecting_to_payment: 'Redirecting to secure payment page…'
+        go_to_payment: 'Proceed to payment'
+        return_to_shop: 'Return to shop'
