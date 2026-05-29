@@ -46,7 +46,7 @@ final class CaptureHttpResponseProvider implements HttpResponseProviderInterface
         $returnUrl = $requestConfiguration->getRequest()->getUri();
 
         return new Response(
-            $this->twig->render('@SpiderWebSyliusStancerPlugin/redirect.html.twig', [
+            $this->twig->render('@StancerPlugin/redirect.html.twig', [
                 'stancer_url' => $hostedUrl,
                 'return_url' => $returnUrl,
             ]),
