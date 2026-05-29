@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace SpiderWeb\Sylius\StancerPlugin\CommandHandler;
 
 use SpiderWeb\Sylius\StancerPlugin\Command\CapturePaymentRequest;
+use Stancer\Config as StancerConfig;
+use Stancer\Payment as StancerPayment;
+use Stancer\Payment\Status as StancerStatus;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Bundle\PaymentBundle\Provider\PaymentRequestProviderInterface;
 use Sylius\Component\Payment\Model\PaymentInterface;
@@ -13,9 +16,6 @@ use Sylius\Component\Payment\PaymentRequestTransitions;
 use Sylius\Component\Payment\PaymentTransitions;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Stancer\Config as StancerConfig;
-use Stancer\Payment as StancerPayment;
-use Stancer\Payment\Status as StancerStatus;
 
 #[AsMessageHandler]
 final class CapturePaymentRequestHandler
@@ -34,6 +34,7 @@ final class CapturePaymentRequestHandler
         if ($paymentRequest->getState() === PaymentRequestInterface::STATE_PROCESSING) {
             // User is returning from the Stancer hosted page: check actual payment status
             $this->handleReturn($paymentRequest);
+
             return;
         }
 
@@ -93,6 +94,7 @@ final class CapturePaymentRequestHandler
 
         if (null === $stancerPaymentId) {
             $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, PaymentRequestTransitions::TRANSITION_FAIL);
+
             return;
         }
 
@@ -109,6 +111,7 @@ final class CapturePaymentRequestHandler
         // Payment was never attempted (null status = user returned before completing payment on Stancer)
         if (null === $status) {
             $this->stateMachine->apply($paymentRequest, PaymentRequestTransitions::GRAPH, PaymentRequestTransitions::TRANSITION_FAIL);
+
             return;
         }
 

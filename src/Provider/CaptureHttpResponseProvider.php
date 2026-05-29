@@ -24,9 +24,9 @@ final class CaptureHttpResponseProvider implements HttpResponseProviderInterface
         // immediately in the handler, so we check for the stancer_payment_id being set).
         // On return from Stancer (state=processing → completed/failed after handler runs),
         // this provider is no longer invoked.
-        return $paymentRequest->getAction() === PaymentRequestInterface::ACTION_CAPTURE
-            && $paymentRequest->getState() === PaymentRequestInterface::STATE_PROCESSING
-            && isset($paymentRequest->getResponseData()['stancer_payment_id']);
+        return $paymentRequest->getAction() === PaymentRequestInterface::ACTION_CAPTURE &&
+            $paymentRequest->getState() === PaymentRequestInterface::STATE_PROCESSING &&
+            isset($paymentRequest->getResponseData()['stancer_payment_id']);
     }
 
     public function getResponse(

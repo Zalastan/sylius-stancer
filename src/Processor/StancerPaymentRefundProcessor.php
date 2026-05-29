@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace SpiderWeb\Sylius\StancerPlugin\Processor;
 
+use Stancer\Config as StancerConfig;
+use Stancer\Payment as StancerPayment;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Sylius\Component\Payment\Factory\PaymentRequestFactoryInterface;
 use Sylius\Component\Payment\Model\PaymentRequestInterface;
 use Sylius\Component\Payment\PaymentRequestTransitions;
 use Sylius\Component\Payment\Repository\PaymentRequestRepositoryInterface;
-use Stancer\Config as StancerConfig;
-use Stancer\Payment as StancerPayment;
+use Throwable;
 
 final class StancerPaymentRefundProcessor
 {
@@ -56,6 +57,7 @@ final class StancerPaymentRefundProcessor
             if (!empty($responseData['stancer_payment_id'])) {
                 $captureRequest = $paymentRequest;
                 $stancerPaymentId = $responseData['stancer_payment_id'];
+
                 break;
             }
         }
@@ -87,7 +89,7 @@ final class StancerPaymentRefundProcessor
             ]);
 
             $this->stateMachine->apply($refundRequest, PaymentRequestTransitions::GRAPH, PaymentRequestTransitions::TRANSITION_COMPLETE);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $refundRequest->setResponseData([
                 'stancer_payment_id' => $stancerPaymentId,
                 'error' => $e->getMessage(),
